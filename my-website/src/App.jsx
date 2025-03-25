@@ -68,6 +68,10 @@ const App = () => {
     localStorage.removeItem("cart");
     setViewCart(false);
   };
+  const handleCloseProductDetail = (category) => {
+    setSelectedProduct(null);
+    setSelectedCategory(category) // Navigate back to the same category
+  };
 
   const categories = [...new Set(products.map((p) => p.category))];
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -95,7 +99,7 @@ const App = () => {
       {selectedProduct && (
         <ProductDetail
           product={selectedProduct}
-          onBack={() => setSelectedProduct(null)}
+          onClose={handleCloseProductDetail}
           onAddToCart={handleAddToCart}
         />
       )}
