@@ -3,7 +3,7 @@ import { products } from "../data/products";
 
 export const Products = ({ selectedCategory, onSelectProduct, onAddToCart }) => {
   const [showPopup, setShowPopup] = useState(false);
-  const [addedProduct, setAddedProduct] = useState(null);
+  const [addedProducts, setAddedProducts] = useState(new Set()); // Track added products
 
   const getFilteredProducts = () => {
     if (selectedCategory) {
@@ -17,8 +17,16 @@ export const Products = ({ selectedCategory, onSelectProduct, onAddToCart }) => 
 
   const handleAddToCart = (product) => {
     onAddToCart(product);
-    setAddedProduct(product);
-    setShowPopup(true);
+    setAddedProducts((prev) => new Set(prev).add(product.id));
+    setTimeout(() => {
+      setAddedProducts((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(product.id); //Remove message after 3 seconds
+        return newSet;
+      });
+    }, 3000);
+    
+    
   };
 
   return (
@@ -49,6 +57,10 @@ export const Products = ({ selectedCategory, onSelectProduct, onAddToCart }) => 
             >
               Add to Cart
             </button>
+            {/* Success Message Below Add to Cart Button */}
+            {addedProducts.has(product.id) && (
+              <p className="text-green-600 mt-2">✅ Product added to cart!</p>
+            )}
           </div>
         ))}
       </div>
@@ -68,7 +80,7 @@ export const Products = ({ selectedCategory, onSelectProduct, onAddToCart }) => 
               </button>
               <button
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                onClick={() => window.location.href = "/cart"} // update with your cart route
+                onClick={() => window.location.href = "/Cart"} // update with your cart route
               >
                 Go to Cart
               </button>
