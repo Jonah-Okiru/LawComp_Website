@@ -1,7 +1,19 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Link } from "react-router-dom";
 
 export const Cart = ({ cartItems, onUpdateQuantity, onRemoveItem }) => {
+  // Use effect to load from local storage
+  const [cartItems, setCartItems] = useState("")
+  useEffect(() => {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      setCartItems(JSON.parse(storedCart))
+    }
+  }, []);
+  // Useeffect to save to local storage
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems]);
   const total = cartItems.reduce(
     (sum, item) => sum + item.priceNum * item.quantity,
     0

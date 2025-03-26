@@ -5,6 +5,7 @@ import { Categories } from "./components/Categories";
 import { Products } from "./components/Products";
 import { ProductDetail } from "./components/ProductDetail";
 import { CartPage } from "./pages/CartPage";
+import Checkout from "./components/Checkout";
 import { products } from "./data/products";
 
 const App = () => {
@@ -112,6 +113,7 @@ const App = () => {
           onCheckout={handleCheckout}
         />
       )}
+      
     </div>
   );
 };
