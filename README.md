@@ -37,26 +37,26 @@ npm run dev
 http://localhost:3000
 ## Project Structure
 lawcomp-ecommerce/
-├── src/
-│   ├── components/
-│   │   ├── Cart.jsx             # Shopping cart component
-│   │   ├── Categories.jsx       # Product categories display
-│   │   ├── Checkout.jsx         # Checkout process
-│   │   ├── Footer.jsx           # Site footer
-│   │   ├── Hero.jsx             # Homepage banner
-│   │   ├── Navbar.jsx           # Navigation bar
-│   │   ├── ProductDetail.jsx    # Single product view
-│   │   └── Products.jsx         # Product listings
-│   ├── data/
-│   │   └── products.js          # Product data
-│   ├── pages/
-│   │   └── CartPage.jsx         # Cart page
-│   ├── App.jsx                  # Main application
-│   └── main.jsx                 # Entry point
-├── public/
-│   └── images/                  # Product and logo images
-├── package.json
-└── README.md
+- src/
+     - components/
+        - Cart.jsx             # Shopping cart component
+        - Categories.jsx       # Product categories display
+        - Checkout.jsx         # Checkout process
+        - Footer.jsx           # Site footer
+        - Hero.jsx             # Homepage banner
+        - Navbar.jsx           # Navigation bar
+        - ProductDetail.jsx    # Single product view
+        - Products.jsx         # Product listings
+    - data/
+        - products.js          # Product data
+    - pages/
+        -  CartPage.jsx         # Cart page
+    - App.jsx                  # Main application
+    - main.jsx                 # Entry point
+    - public/
+       - images/                  # Product and logo images
+- package.json
+- README.md
 ## Key Components
 1. *Product Display*
  - Responsive grid layout for products
