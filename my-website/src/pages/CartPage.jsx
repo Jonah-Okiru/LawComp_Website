@@ -1,13 +1,22 @@
 import React from "react";
 
-export const CartPage = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout }) => {
+export const CartPage = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onReturnToShop }) => {
   const total = cart.reduce((sum, item) => sum + item.quantity * parseFloat(item.price.replace(/[^\d.]/g, "")), 0);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">Shopping Cart</h2>
       {cart.length === 0 ? (
-        <p>Your cart is empty.</p>
+        <div className="text-center">
+          <p>Your cart is empty.</p>
+          <button
+            onClick={onReturnToShop}
+            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+          >
+            Return to shopping
+          </button>
+        </div>
+        
       ) : (
         <div>
           {cart.map((item) => (

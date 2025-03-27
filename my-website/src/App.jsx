@@ -73,6 +73,11 @@ const App = () => {
     setSelectedProduct(null);
     setSelectedCategory(category) // Navigate back to the same category
   };
+  const handleReturnToShop = () => {
+    setViewCart(false);
+    setSelectedCategory(null);
+    setSelectedProduct(null);
+  };
 
   const categories = [...new Set(products.map((p) => p.category))];
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -111,6 +116,7 @@ const App = () => {
           onUpdateQuantity={handleUpdateQuantity}
           onRemoveItem={handleRemoveItem}
           onCheckout={handleCheckout}
+          onReturnToShop={handleReturnToShop}
         />
       )}
       
