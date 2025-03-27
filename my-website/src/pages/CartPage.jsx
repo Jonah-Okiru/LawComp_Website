@@ -16,7 +16,6 @@ export const CartPage = ({ cart, onUpdateQuantity, onRemoveItem, onCheckout, onR
             Return to shopping
           </button>
         </div>
-        
       ) : (
         <div>
           {cart.map((item) => (

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { Categories } from "./components/Categories";
@@ -7,12 +8,14 @@ import { ProductDetail } from "./components/ProductDetail";
 import { CartPage } from "./pages/CartPage";
 import Checkout from "./components/Checkout";
 import { products } from "./data/products";
+import { Footer } from "./components/Footer";
 
-const App = () => {
+const AppContent = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [viewCart, setViewCart] = useState(false);
   const [cart, setCart] = useState([]);
+  const navigate = useNavigate();
 
   // Load cart from local storage
   useEffect(() => {
@@ -64,19 +67,19 @@ const App = () => {
   };
 
   const handleCheckout = () => {
-    alert("Checkout complete!");
-    setCart([]);
-    localStorage.removeItem("cart");
-    setViewCart(false);
+    navigate("/checkout");
   };
+
   const handleCloseProductDetail = (category) => {
     setSelectedProduct(null);
-    setSelectedCategory(category) // Navigate back to the same category
+    setSelectedCategory(category);
   };
+
   const handleReturnToShop = () => {
     setViewCart(false);
     setSelectedCategory(null);
     setSelectedProduct(null);
+    navigate("/");
   };
 
   const categories = [...new Set(products.map((p) => p.category))];
@@ -89,38 +92,66 @@ const App = () => {
         categories={categories}
         onCategorySelect={handleCategorySelect}
         cartCount={cartCount}
-        onToggleCart={() => setViewCart(!viewCart)}
+        onToggleCart={() => {
+          setViewCart(!viewCart);
+          navigate("/cart");
+        }}
       />
 
-      {!viewCart && !selectedProduct && <Hero onShopNow={() => window.scrollTo({ top: 600, behavior: "smooth" })} />}
-      {!viewCart && !selectedProduct && <Categories onSelectCategory={handleCategorySelect} />}
-      {!viewCart && !selectedProduct && (
-        <Products
-          selectedCategory={selectedCategory}
-          onSelectProduct={handleSelectProduct}
-          onAddToCart={handleAddToCart}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              {!viewCart && !selectedProduct && (
+                <>
+                  <Hero onShopNow={() => window.scrollTo({ top: 600, behavior: "smooth" })} />
+                  <Categories onSelectCategory={handleCategorySelect} />
+                  <Products
+                    selectedCategory={selectedCategory}
+                    onSelectProduct={handleSelectProduct}
+                    onAddToCart={handleAddToCart}
+                  />
+                </>
+              )}
+              {selectedProduct && (
+                <ProductDetail
+                  product={selectedProduct}
+                  onClose={handleCloseProductDetail}
+                  onAddToCart={handleAddToCart}
+                />
+              )}
+            </>
+          }
         />
-      )}
-
-      {selectedProduct && (
-        <ProductDetail
-          product={selectedProduct}
-          onClose={handleCloseProductDetail}
-          onAddToCart={handleAddToCart}
+        <Route
+          path="/cart"
+          element={
+            <CartPage
+              cart={cart}
+              onUpdateQuantity={handleUpdateQuantity}
+              onRemoveItem={handleRemoveItem}
+              onCheckout={handleCheckout}
+              onReturnToShop={handleReturnToShop}
+            />
+          }
         />
-      )}
-
-      {viewCart && (
-        <CartPage
-          cart={cart}
-          onUpdateQuantity={handleUpdateQuantity}
-          onRemoveItem={handleRemoveItem}
-          onCheckout={handleCheckout}
-          onReturnToShop={handleReturnToShop}
+        <Route
+          path="/checkout"
+          element={<Checkout />}
         />
-      )}
+      </Routes>
       
+      <Footer />
     </div>
+  );
+};
+
+const App = () => {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 };
 
