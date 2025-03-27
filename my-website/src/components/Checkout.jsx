@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaWhatsapp, FaEnvelope } from "react-icons/fa";
+import { FaWhatsapp, FaEnvelope, FaHome  } from "react-icons/fa";
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -82,6 +82,13 @@ const Checkout = () => {
       {/* Checkout Form */}
       <div>
         <h2 className="text-3xl font-bold mb-6">Checkout</h2>
+        <button
+          onClick={handleReturnToShop}
+          className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded"
+        >
+          <FaHome />
+          <span>Return Home</span>
+        </button>
 
         {submitted ? (
           <div className="bg-green-100 text-green-800 p-4 rounded">
