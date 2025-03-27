@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaWhatsapp, FaEnvelope } from "react-icons/fa";
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -63,14 +64,14 @@ const Checkout = () => {
 
   const handleWhatsAppOrder = () => {
     setOrderMethod("whatsapp");
-    const phoneNumber = "+254712345678"; // Replace with your business WhatsApp number
+    const phoneNumber = "+254719639512"; // Replace with your business WhatsApp number
     const message = formatOrderMessage();
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
   };
 
   const handleEmailOrder = () => {
     setOrderMethod("email");
-    const email = "orders@lawcomp.com"; // Replace with your business email
+    const email = "okirujonah@gmail.com"; // Replace with your business email
     const subject = encodeURIComponent(`New Order from ${formData.fullName}`);
     const body = formatOrderMessage();
     window.open(`mailto:${email}?subject=${subject}&body=${body}`);
@@ -165,6 +166,7 @@ const Checkout = () => {
                 onClick={handleWhatsAppOrder}
                 className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 flex items-center justify-center"
               >
+                <FaWhatsapp size={20} />
                 <span>Order via WhatsApp</span>
               </button>
 
@@ -173,6 +175,7 @@ const Checkout = () => {
                 onClick={handleEmailOrder}
                 className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 flex items-center justify-center"
               >
+                <FaEnvelope size={20} />
                 <span>Order via Email</span>
               </button>
             </div>
