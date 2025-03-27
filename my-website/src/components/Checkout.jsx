@@ -12,6 +12,7 @@ const Checkout = () => {
 
   const [submitted, setSubmitted] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [orderMethod, setOrderMethod] = useState(""); // 'whatsapp' or 'email'
   const navigate = useNavigate();
 
   // Fetch cart from localStorage
@@ -31,7 +32,6 @@ const Checkout = () => {
     e.preventDefault();
     console.log("Order Submitted:", { ...formData, cartItems });
     setSubmitted(true);
-    // Clear cart after submission
     localStorage.removeItem("cart");
   };
 
@@ -43,6 +43,38 @@ const Checkout = () => {
     (sum, item) => sum + item.quantity * parseFloat(item.price.replace(/[^\d.]/g, "")),
     0
   );
+
+  const formatOrderMessage = () => {
+    let message = `New Order from ${formData.fullName}\n\n`;
+    message += `Contact: ${formData.phone}\n`;
+    message += `Email: ${formData.email}\n`;
+    message += `Delivery Address: ${formData.address}\n`;
+    message += `Notes: ${formData.notes || "None"}\n\n`;
+    message += "Order Items:\n";
+    
+    cartItems.forEach((item) => {
+      message += `- ${item.name} (${item.quantity} x ${item.price}) = Ksh${(item.quantity * parseFloat(item.price.replace(/[^\d.]/g, ""))).toFixed(2)}\n`;
+    });
+    
+    message += `\nTotal: Ksh${cartTotal.toFixed(2)}`;
+    
+    return encodeURIComponent(message);
+  };
+
+  const handleWhatsAppOrder = () => {
+    setOrderMethod("whatsapp");
+    const phoneNumber = "+254712345678"; // Replace with your business WhatsApp number
+    const message = formatOrderMessage();
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+  };
+
+  const handleEmailOrder = () => {
+    setOrderMethod("email");
+    const email = "orders@lawcomp.com"; // Replace with your business email
+    const subject = encodeURIComponent(`New Order from ${formData.fullName}`);
+    const body = formatOrderMessage();
+    window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+  };
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-4 grid md:grid-cols-2 gap-8">
@@ -67,7 +99,83 @@ const Checkout = () => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* ... rest of the form remains the same ... */}
+            <div>
+              <label className="block font-medium">Full Name</label>
+              <input
+                type="text"
+                name="fullName"
+                required
+                value={formData.fullName}
+                onChange={handleChange}
+                className="w-full mt-1 p-2 border rounded"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium">Email</label>
+              <input
+                type="email"
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full mt-1 p-2 border rounded"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium">Phone</label>
+              <input
+                type="tel"
+                name="phone"
+                required
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full mt-1 p-2 border rounded"
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium">Shipping Address</label>
+              <textarea
+                name="address"
+                required
+                value={formData.address}
+                onChange={handleChange}
+                className="w-full mt-1 p-2 border rounded"
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium">Additional Notes</label>
+              <textarea
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
+                className="w-full mt-1 p-2 border rounded"
+                rows={2}
+                placeholder="e.g. delivery instructions"
+              />
+            </div>
+
+            <div className="flex flex-col space-y-4">
+              <button
+                type="button"
+                onClick={handleWhatsAppOrder}
+                className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 flex items-center justify-center"
+              >
+                <span>Order via WhatsApp</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleEmailOrder}
+                className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 flex items-center justify-center"
+              >
+                <span>Order via Email</span>
+              </button>
+            </div>
           </form>
         )}
       </div>
