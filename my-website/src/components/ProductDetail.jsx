@@ -1,4 +1,5 @@
 import { FaArrowLeft, FaShoppingCart } from "react-icons/fa";
+import { useState } from "react";
 
 /**
  * ProductDetail component displays detailed information about a selected product
@@ -7,7 +8,16 @@ import { FaArrowLeft, FaShoppingCart } from "react-icons/fa";
  * @param {Function} onAddToCart - Function to add product to cart
  */
 export const ProductDetail = ({ product, onClose, onAddToCart }) => {
+  const [showAddedMessage, setShowAddedMessage] = useState(false);
   if (!product) return null;
+  const handleAddToCart = () => {
+    onAddToCart(product);
+    setShowAddedMessage(true);
+    // Hide the message after 3 seconds
+    setTimeout(() => {
+      setShowAddedMessage(false)
+    }, 3000);
+  }
 
   return (
     <div className="px-4 py-10 bg-gray-50 min-h-screen">
@@ -68,15 +78,21 @@ export const ProductDetail = ({ product, onClose, onAddToCart }) => {
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
               <button
-                onClick={() => onAddToCart(product)}
+                onClick={handleAddToCart}
                 className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg transition duration-200"
               >
                 <FaShoppingCart />
                 <span>Add to Cart</span>
               </button>
-              <button className="bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 px-6 rounded-lg transition duration-200">
-                Buy Now
-              </button>
+        
+              {/* Added to cart message */}
+              {showAddedMessage && (
+                <div
+                  className="mt-4 bg-gray-100 border border-green-400 text-green-700 px-4 py-2 rounded text-sm"
+                >
+                  {product.name} has been added to your cart!
+                </div>
+              )}
             </div>
           </div>
         </div>
