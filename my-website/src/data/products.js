@@ -2,6 +2,7 @@ export const products = [
     {
     id: 1,
     category:'Laptops',
+    subcategory:'HP',
     name: 'Cocoa  butter formula products (Skin therapy face oil)',
     image: '/images/Cocoa_butter_formula.jpeg',
     price: 'ksh25',
@@ -10,6 +11,7 @@ export const products = [
   {
     id: 2,
     category:'Desktops',
+    subcategory:'LENOVO',
     name: 'Hobby Marshmallow Vanilla Body Wash',
     image: '/images/Hobby_Marshmallow.jpeg',
     price: 'Ksh 15',
@@ -18,6 +20,7 @@ export const products = [
   {
     id: 3,
     category:'Screens',
+    subcategory:'Sumsung',
     name: 'NIVEA Cool Kick Body Lotion for Men - Refreshing Cooling and 48-Hour Moisture',
     image: '/images/Nivea_men.jpeg',
     price: 'Ksh10',
@@ -26,6 +29,7 @@ export const products = [
   {
     id: 4,
     category:'AllinOne',
+    subcategory:'Pofilex',
     name: 'Oh So Heavenly Creme Oil Body Lotion Pure Honey & Almond Oil 720ml',
     image: '/images/Oh_So_Heavenly.jpeg',
     price: 'Ksh100',
@@ -34,6 +38,7 @@ export const products = [
   {
     id:5,
     category:'Printers',
+    subcategory:'Canon',
     name:'Pro White vitamin C Tumeric Cream',
     image:'/images/Pro_white_tumeric.jpeg',
     price: 'Ksh 300',
@@ -42,6 +47,7 @@ export const products = [
   {
     id:6,
     category:'Networking',
+    subcategory:'Routers',
     name:'Ingrams Skin doctor',
     image:'/images/Ingram.jpeg',
     price:'Ksh 260',

@@ -2,21 +2,32 @@ import React, { useState } from "react";
 import { products } from "../data/products";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
-export const Categories = ({ onSelectCategory }) => {
-  // Group products by category
+export const Categories = ({ onSelectCategory, onSelectSubcategory }) => {
+  // Group products by category and subcategory
   const categoriesMap = products.reduce((acc, product) => {
     if (!acc[product.category]) {
-      acc[product.category] = [];
+      acc[product.category] = {
+        subcategories: new Set(),
+        products: []
+      };
     }
-    acc[product.category].push(product);
+    acc[product.category].subcategories.add(product.subcategory);
+    acc[product.category].products.push(product);
     return acc;
   }, {});
 
   // Create category list with random images
-  const categoryList = Object.entries(categoriesMap).map(([category, items]) => {
-    const randomProduct = items[Math.floor(Math.random() * items.length)];
-    return { category, image: randomProduct.image };
+  const categoryList = Object.entries(categoriesMap).map(([category, data]) => {
+    const randomProduct = data.products[Math.floor(Math.random() * data.products.length)];
+    return { 
+      category, 
+      image: randomProduct.image,
+      subcategories: Array.from(data.subcategories)
+    };
   });
+
+  // State for hovered category
+  const [hoveredCategory, setHoveredCategory] = useState(null);
 
   // Pagination state
   const itemsPerPage = 4;
@@ -41,29 +52,55 @@ export const Categories = ({ onSelectCategory }) => {
         
         {/* Categories Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {paginatedCategories.map(({ category, image }) => (
+          {paginatedCategories.map(({ category, image, subcategories }) => (
             <div
               key={category}
-              onClick={() => onSelectCategory(category)}
-              className="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 group"
+              className="relative"
+              onMouseEnter={() => setHoveredCategory(category)}
+              onMouseLeave={() => setHoveredCategory(null)}
             >
-              {/* Category Image */}
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src={image}
-                  alt={category}
-                  className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition duration-300" />
+              <div
+                onClick={() => onSelectCategory(category)}
+                className="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 group"
+              >
+                {/* Category Image */}
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={image}
+                    alt={category}
+                    className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition duration-300" />
+                </div>
+                
+                {/* Category Name */}
+                <div className="p-4 text-center">
+                  <h4 className="font-semibold text-lg text-gray-800 group-hover:text-blue-600 transition duration-200">
+                    {category}
+                  </h4>
+                  <p className="text-sm text-gray-600 mt-1">View products</p>
+                </div>
               </div>
-              
-              {/* Category Name */}
-              <div className="p-4 text-center">
-                <h4 className="font-semibold text-lg text-gray-800 group-hover:text-blue-600 transition duration-200">
-                  {category}
-                </h4>
-                <p className="text-sm text-gray-600 mt-1">View products</p>
-              </div>
+
+              {/* Subcategories Dropdown */}
+              {hoveredCategory === category && (
+                <div className="absolute z-10 mt-2 w-full bg-white rounded-md shadow-lg">
+                  <div className="py-1">
+                    {subcategories.map(subcategory => (
+                      <div
+                        key={subcategory}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectSubcategory(category, subcategory);
+                        }}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                      >
+                        {subcategory}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>

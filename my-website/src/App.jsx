@@ -13,6 +13,7 @@ import { Footer } from "./components/Footer";
 const AppContent = () => {
   // State management for the application
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cart, setCart] = useState([]);
   const navigate = useNavigate();
@@ -33,10 +34,17 @@ const AppContent = () => {
   // Handle category selection
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
+    setSelectedSubcategory(null);
     setSelectedProduct(null);
     navigate("/");
   };
-
+  // Handle subcatogory selection
+  const handleSubcategorySelect = (category, subcategory) => {
+    setSelectedCategory(category);
+    setSelectedSubcategory(subcategory);
+    setSelectedProduct(null);
+    navigate("/");
+  };
   // Handle product selection
   const handleSelectProduct = (product) => {
     setSelectedProduct(product);
@@ -109,10 +117,11 @@ const AppContent = () => {
             element={
               <>
                 <Hero onShopNow={() => document.getElementById('products').scrollIntoView({ behavior: 'smooth' })} />
-                <Categories onSelectCategory={handleCategorySelect} />
+                <Categories onSelectCategory={handleCategorySelect} onSelectSubcategory={handleSubcategorySelect} />
                 <div id="products">
                   <Products
                     selectedCategory={selectedCategory}
+                    selectedSubcategory={selectedSubcategory}
                     onSelectProduct={handleSelectProduct}
                     onAddToCart={handleAddToCart}
                   />
