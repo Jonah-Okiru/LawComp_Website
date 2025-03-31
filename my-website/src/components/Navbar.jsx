@@ -9,6 +9,9 @@ import { FaTimes } from "react-icons/fa";
  * @param {Function} props.onSelectProduct - Handler for product selection
  * @param {Array} props.categories - List of product categories
  * @param {Function} props.onCategorySelect - Handler for category selection
+ * @param {Function} props.onSubcategorySelect - Handler for subcategory selection
+ * @param {String} props.selectedCategory - Currently selected category
+ * @param {String} props.selectedSubcategory - Currently selected subcategory
  * @param {Number} props.cartCount - Number of items in cart
  * @param {Function} props.onToggleCart - Handler for toggling cart view
  */
@@ -16,6 +19,9 @@ export const Navbar = ({
   onSelectProduct, 
   categories, 
   onCategorySelect, 
+  onSubcategorySelect,
+  selectedCategory,
+  selectedSubcategory,
   cartCount, 
   onToggleCart 
 }) => {
@@ -23,6 +29,21 @@ export const Navbar = ({
   const [suggestions, setSuggestions] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [categorySubcategories, setCategorySubcategories] = useState({});
+
+  // Generate subcategories map when component mounts
+  useEffect(() => {
+    const subcategoriesMap = {};
+    categories.forEach(category => {
+      subcategoriesMap[category] = [
+        ...new Set(products
+          .filter(p => p.category === category)
+          .map(p => p.subcategory)
+        )
+      ];
+    });
+    setCategorySubcategories(subcategoriesMap);
+  }, [categories]);
 
   // Close mobile menu when window is resized to desktop
   useEffect(() => {
@@ -74,17 +95,50 @@ export const Navbar = ({
             
             {/* Desktop Navigation */}
             <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
-              <select
-                onChange={(e) => onCategorySelect(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-1 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">All Categories</option>
-                {categories.map((category, i) => (
-                  <option key={i} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+              <div className="relative group">
+                <select
+                  value={selectedCategory || ""}
+                  onChange={(e) => {
+                    onCategorySelect(e.target.value);
+                    onSubcategorySelect(null); // Reset subcategory when category changes
+                  }}
+                  className="border border-gray-300 rounded-md px-3 py-1 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[180px]"
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((category, i) => (
+                    <option key={i} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Subcategory dropdown */}
+                {selectedCategory && categorySubcategories[selectedCategory] && (
+                  <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg">
+                    <div className="py-1">
+                      <div 
+                        className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => onSubcategorySelect(null)}
+                      >
+                        All {selectedCategory}
+                      </div>
+                      {categorySubcategories[selectedCategory].map((subcategory, i) => (
+                        <div
+                          key={i}
+                          onClick={() => onSubcategorySelect(subcategory)}
+                          className={`px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer ${
+                            selectedSubcategory === subcategory 
+                              ? 'bg-blue-50 text-blue-600' 
+                              : 'text-gray-700'
+                          }`}
+                        >
+                          {subcategory}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -193,9 +247,12 @@ export const Navbar = ({
       {isMobileMenuOpen && (
         <div className="md:hidden bg-green-700 px-4 py-2">
           <div className="space-y-2">
+            {/* Category selection */}
             <select
+              value={selectedCategory || ""}
               onChange={(e) => {
                 onCategorySelect(e.target.value);
+                onSubcategorySelect(null);
                 setIsMobileMenuOpen(false);
               }}
               className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -207,6 +264,27 @@ export const Navbar = ({
                 </option>
               ))}
             </select>
+
+            {/* Subcategory selection */}
+            {selectedCategory && categorySubcategories[selectedCategory] && (
+              <select
+                value={selectedSubcategory || ""}
+                onChange={(e) => {
+                  onSubcategorySelect(e.target.value || null);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All {selectedCategory}</option>
+                {categorySubcategories[selectedCategory].map((subcategory, i) => (
+                  <option key={i} value={subcategory}>
+                    {subcategory}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* Cart Button */}
             <button
               onClick={() => {
                 onToggleCart();

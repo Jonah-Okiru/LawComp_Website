@@ -10,8 +10,12 @@ import Checkout from "./components/Checkout";
 import { products } from "./data/products";
 import { Footer } from "./components/Footer";
 
+/**
+ * Main application content component
+ * Handles all state management and routing
+ */
 const AppContent = () => {
-  // State management for the application
+  // State for selected category, subcategory, and product
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -31,27 +35,40 @@ const AppContent = () => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // Handle category selection
+  /**
+   * Handle category selection
+   * @param {String} category - Selected category
+   */
   const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    setSelectedSubcategory(null);
+    setSelectedCategory(category || null);
+    setSelectedSubcategory(null); // Reset subcategory when category changes
     setSelectedProduct(null);
     navigate("/");
   };
-  // Handle subcatogory selection
-  const handleSubcategorySelect = (category, subcategory) => {
-    setSelectedCategory(category);
-    setSelectedSubcategory(subcategory);
+
+  /**
+   * Handle subcategory selection
+   * @param {String} subcategory - Selected subcategory
+   */
+  const handleSubcategorySelect = (subcategory) => {
+    setSelectedSubcategory(subcategory || null);
     setSelectedProduct(null);
     navigate("/");
   };
-  // Handle product selection
+
+  /**
+   * Handle product selection
+   * @param {Object} product - Selected product
+   */
   const handleSelectProduct = (product) => {
     setSelectedProduct(product);
     navigate(`/product/${product.id}`);
   };
 
-  // Add product to cart
+  /**
+   * Add product to cart
+   * @param {Object} product - Product to add
+   */
   const handleAddToCart = (product) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id);
@@ -66,7 +83,11 @@ const AppContent = () => {
     });
   };
 
-  // Update product quantity in cart
+  /**
+   * Update product quantity in cart
+   * @param {Number} id - Product ID
+   * @param {Number} quantity - New quantity
+   */
   const handleUpdateQuantity = (id, quantity) => {
     if (quantity < 1) return;
     setCart(prevCart =>
@@ -76,7 +97,10 @@ const AppContent = () => {
     );
   };
 
-  // Remove product from cart
+  /**
+   * Remove product from cart
+   * @param {Number} id - Product ID to remove
+   */
   const handleRemoveItem = (id) => {
     setCart(prevCart => prevCart.filter(item => item.id !== id));
   };
@@ -104,6 +128,9 @@ const AppContent = () => {
         onSelectProduct={handleSelectProduct}
         categories={categories}
         onCategorySelect={handleCategorySelect}
+        onSubcategorySelect={handleSubcategorySelect}
+        selectedCategory={selectedCategory}
+        selectedSubcategory={selectedSubcategory}
         cartCount={cartCount}
         onToggleCart={() => navigate("/cart")}
       />
@@ -117,7 +144,12 @@ const AppContent = () => {
             element={
               <>
                 <Hero onShopNow={() => document.getElementById('products').scrollIntoView({ behavior: 'smooth' })} />
-                <Categories onSelectCategory={handleCategorySelect} onSelectSubcategory={handleSubcategorySelect} />
+                <Categories 
+                  onSelectCategory={handleCategorySelect}
+                  onSelectSubcategory={handleSubcategorySelect}
+                  selectedCategory={selectedCategory}
+                  selectedSubcategory={selectedSubcategory}
+                />
                 <div id="products">
                   <Products
                     selectedCategory={selectedCategory}
@@ -169,7 +201,9 @@ const AppContent = () => {
   );
 };
 
-// Main App Component with Router
+/**
+ * Main App Component with Router
+ */
 const App = () => {
   return (
     <Router>

@@ -1,8 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { products } from "../data/products";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
-export const Categories = ({ onSelectCategory, onSelectSubcategory }) => {
+/**
+ * Categories component displays product categories and subcategories
+ * @param {Object} props - Component props
+ * @param {Function} props.onSelectCategory - Handler for category selection
+ * @param {Function} props.onSelectSubcategory - Handler for subcategory selection
+ * @param {String} props.selectedCategory - Currently selected category
+ * @param {String} props.selectedSubcategory - Currently selected subcategory
+ */
+export const Categories = ({ 
+  onSelectCategory, 
+  onSelectSubcategory,
+  selectedCategory,
+  selectedSubcategory
+}) => {
   // Group products by category and subcategory
   const categoriesMap = products.reduce((acc, product) => {
     if (!acc[product.category]) {
@@ -28,6 +41,8 @@ export const Categories = ({ onSelectCategory, onSelectSubcategory }) => {
 
   // State for hovered category
   const [hoveredCategory, setHoveredCategory] = useState(null);
+  // State to keep subcategories open when a category is selected
+  const [activeCategory, setActiveCategory] = useState(null);
 
   // Pagination state
   const itemsPerPage = 4;
@@ -41,6 +56,30 @@ export const Categories = ({ onSelectCategory, onSelectSubcategory }) => {
   // Navigation handlers
   const handleNext = () => page < totalPages - 1 && setPage(page + 1);
   const handlePrev = () => page > 0 && setPage(page - 1);
+
+  /**
+   * Handle category click
+   * @param {String} category - Clicked category
+   */
+  const handleCategoryClick = (category) => {
+    if (activeCategory === category) {
+      setActiveCategory(null);
+      onSelectCategory(null);
+    } else {
+      setActiveCategory(category);
+      onSelectCategory(category);
+    }
+    onSelectSubcategory(null);
+  };
+
+  /**
+   * Handle subcategory click
+   * @param {String} subcategory - Clicked subcategory
+   */
+  const handleSubcategoryClick = (subcategory) => {
+    onSelectSubcategory(subcategory);
+    setHoveredCategory(null);
+  };
 
   return (
     <div className="py-12 px-4 bg-gray-50">
@@ -57,11 +96,20 @@ export const Categories = ({ onSelectCategory, onSelectSubcategory }) => {
               key={category}
               className="relative"
               onMouseEnter={() => setHoveredCategory(category)}
-              onMouseLeave={() => setHoveredCategory(null)}
+              onMouseLeave={() => {
+                if (activeCategory !== category) {
+                  setHoveredCategory(null);
+                }
+              }}
             >
+              {/* Category Card */}
               <div
-                onClick={() => onSelectCategory(category)}
-                className="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 group"
+                onClick={() => handleCategoryClick(category)}
+                className={`cursor-pointer bg-white rounded-lg shadow-md overflow-hidden transition duration-300 group ${
+                  selectedCategory === category 
+                    ? 'ring-2 ring-blue-500' 
+                    : 'hover:shadow-lg'
+                }`}
               >
                 {/* Category Image */}
                 <div className="relative h-48 overflow-hidden">
@@ -78,22 +126,48 @@ export const Categories = ({ onSelectCategory, onSelectSubcategory }) => {
                   <h4 className="font-semibold text-lg text-gray-800 group-hover:text-blue-600 transition duration-200">
                     {category}
                   </h4>
-                  <p className="text-sm text-gray-600 mt-1">View products</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {selectedCategory === category 
+                      ? selectedSubcategory 
+                        ? `Viewing: ${selectedSubcategory}`
+                        : `Viewing all ${category}`
+                      : 'View products'}
+                  </p>
                 </div>
               </div>
 
               {/* Subcategories Dropdown */}
-              {hoveredCategory === category && (
+              {(hoveredCategory === category || activeCategory === category) && (
                 <div className="absolute z-10 mt-2 w-full bg-white rounded-md shadow-lg">
                   <div className="py-1">
+                    {/* Option to view all products in category */}
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSubcategoryClick(null);
+                      }}
+                      className={`block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer ${
+                        !selectedSubcategory && selectedCategory === category
+                          ? 'bg-blue-50 text-blue-600'
+                          : 'text-gray-700'
+                      }`}
+                    >
+                      All {category}
+                    </div>
+                    
+                    {/* List of subcategories */}
                     {subcategories.map(subcategory => (
                       <div
                         key={subcategory}
                         onClick={(e) => {
                           e.stopPropagation();
-                          onSelectSubcategory(category, subcategory);
+                          handleSubcategoryClick(subcategory);
                         }}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                        className={`block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer ${
+                          selectedSubcategory === subcategory
+                            ? 'bg-blue-50 text-blue-600'
+                            : 'text-gray-700'
+                        }`}
                       >
                         {subcategory}
                       </div>
