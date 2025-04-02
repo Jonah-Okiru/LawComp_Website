@@ -3,18 +3,6 @@ import { products } from "../data/products";
 import { ShoppingCart, Search, Menu } from "lucide-react";
 import { FaTimes } from "react-icons/fa";
 
-/**
- * Navigation bar component with search, categories, and cart functionality
- * @param {Object} props - Component props
- * @param {Function} props.onSelectProduct - Handler for product selection
- * @param {Array} props.categories - List of product categories
- * @param {Function} props.onCategorySelect - Handler for category selection
- * @param {Function} props.onSubcategorySelect - Handler for subcategory selection
- * @param {String} props.selectedCategory - Currently selected category
- * @param {String} props.selectedSubcategory - Currently selected subcategory
- * @param {Number} props.cartCount - Number of items in cart
- * @param {Function} props.onToggleCart - Handler for toggling cart view
- */
 export const Navbar = ({ 
   onSelectProduct, 
   categories, 
@@ -29,6 +17,7 @@ export const Navbar = ({
   const [suggestions, setSuggestions] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [categorySubcategories, setCategorySubcategories] = useState({});
 
   // Generate subcategories map when component mounts
@@ -79,6 +68,23 @@ export const Navbar = ({
     setIsMobileMenuOpen(false);
   };
 
+  const handleCategoryClick = (category) => {
+    onCategorySelect(category);
+    onSubcategorySelect(null);
+    setIsCategoriesOpen(false);
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleSubcategoryClick = (subcategory) => {
+    onSubcategorySelect(subcategory);
+    setIsCategoriesOpen(false);
+    setIsMobileMenuOpen(false);
+  };
+
+  const toggleCategories = () => {
+    setIsCategoriesOpen(!isCategoriesOpen);
+  };
+
   return (
     <nav className="bg-green-600 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,44 +101,87 @@ export const Navbar = ({
             
             {/* Desktop Navigation */}
             <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
-              <div className="relative group">
-                <select
-                  value={selectedCategory || ""}
-                  onChange={(e) => {
-                    onCategorySelect(e.target.value);
-                    onSubcategorySelect(null); // Reset subcategory when category changes
-                  }}
-                  className="border border-gray-300 rounded-md px-3 py-1 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[180px]"
+              <button
+                className="px-3 py-2 text-white hover:bg-green-700 rounded-md font-medium"
+                onClick={() => {
+                  handleCategoryClick(null);
+                  handleSubcategoryClick(null);
+                }}
+              >
+                All Products
+              </button>
+              
+              {/* Categories Dropdown */}
+              <div className="relative">
+                <button
+                  className="px-3 py-2 text-white hover:bg-green-700 rounded-md font-medium flex items-center"
+                  onClick={toggleCategories}
                 >
-                  <option value="">All Categories</option>
-                  {categories.map((category, i) => (
-                    <option key={i} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-
-                {/* Subcategory dropdown */}
-                {selectedCategory && categorySubcategories[selectedCategory] && (
-                  <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg">
+                  Categories
+                  <svg
+                    className={`ml-2 h-4 w-4 transition-transform ${
+                      isCategoriesOpen ? "transform rotate-180" : ""
+                    }`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                
+                {/* Categories Dropdown Menu */}
+                {isCategoriesOpen && (
+                  <div 
+                    className="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10"
+                  >
                     <div className="py-1">
-                      <div 
-                        className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => onSubcategorySelect(null)}
-                      >
-                        All {selectedCategory}
-                      </div>
-                      {categorySubcategories[selectedCategory].map((subcategory, i) => (
-                        <div
-                          key={i}
-                          onClick={() => onSubcategorySelect(subcategory)}
-                          className={`px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer ${
-                            selectedSubcategory === subcategory 
-                              ? 'bg-blue-50 text-blue-600' 
-                              : 'text-gray-700'
-                          }`}
-                        >
-                          {subcategory}
+                      {categories.map((category) => (
+                        <div key={category} className="relative">
+                          <button
+                            onClick={() => handleCategoryClick(category)}
+                            className={`w-full text-left px-4 py-2 text-sm flex justify-between items-center ${
+                              selectedCategory === category && !selectedSubcategory
+                                ? 'bg-green-100 text-green-800'
+                                : 'text-gray-700 hover:bg-gray-100'
+                            }`}
+                          >
+                            {category}
+                            {categorySubcategories[category] && (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                              </svg>
+                            )}
+                          </button>
+                          
+                          {/* Subcategories Dropdown */}
+                          {categorySubcategories[category] && (
+                            <div className="absolute left-full top-0 ml-1 w-56 bg-white rounded-md shadow-lg z-20">
+                              <div className="py-1">
+                                {categorySubcategories[category].map((subcategory) => (
+                                  <button
+                                    key={subcategory}
+                                    onClick={() => {
+                                      handleCategoryClick(category);
+                                      handleSubcategoryClick(subcategory);
+                                    }}
+                                    className={`w-full text-left px-4 py-2 text-sm ${
+                                      selectedSubcategory === subcategory
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'text-gray-700 hover:bg-gray-100'
+                                    }`}
+                                  >
+                                    {subcategory}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -247,42 +296,56 @@ export const Navbar = ({
       {isMobileMenuOpen && (
         <div className="md:hidden bg-green-700 px-4 py-2">
           <div className="space-y-2">
-            {/* Category selection */}
-            <select
-              value={selectedCategory || ""}
-              onChange={(e) => {
-                onCategorySelect(e.target.value);
-                onSubcategorySelect(null);
-                setIsMobileMenuOpen(false);
+            <button
+              onClick={() => {
+                handleCategoryClick(null);
+                handleSubcategoryClick(null);
               }}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full text-left px-4 py-2 text-white hover:bg-green-800 rounded-md"
             >
-              <option value="">All Categories</option>
-              {categories.map((category, i) => (
-                <option key={i} value={category}>
-                  {category}
-                </option>
+              All Products
+            </button>
+            
+            {/* Category selection */}
+            <div className="border-t border-green-800 pt-2">
+              <h3 className="px-4 py-2 text-white font-medium">Categories</h3>
+              {categories.map((category) => (
+                <div key={category} className="pl-4">
+                  <button
+                    onClick={() => handleCategoryClick(category)}
+                    className={`w-full text-left px-4 py-2 text-white rounded-md ${
+                      selectedCategory === category && !selectedSubcategory
+                        ? 'bg-green-800'
+                        : 'hover:bg-green-800'
+                    }`}
+                  >
+                    {category}
+                  </button>
+                  
+                  {/* Subcategory selection */}
+                  {selectedCategory === category && categorySubcategories[category] && (
+                    <div className="pl-4">
+                      {categorySubcategories[category].map((subcategory) => (
+                        <button
+                          key={subcategory}
+                          onClick={() => {
+                            handleCategoryClick(category);
+                            handleSubcategoryClick(subcategory);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-white text-sm rounded-md ${
+                            selectedSubcategory === subcategory
+                              ? 'bg-green-800'
+                              : 'hover:bg-green-800'
+                          }`}
+                        >
+                          {subcategory}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
-            </select>
-
-            {/* Subcategory selection */}
-            {selectedCategory && categorySubcategories[selectedCategory] && (
-              <select
-                value={selectedSubcategory || ""}
-                onChange={(e) => {
-                  onSubcategorySelect(e.target.value || null);
-                  setIsMobileMenuOpen(false);
-                }}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">All {selectedCategory}</option>
-                {categorySubcategories[selectedCategory].map((subcategory, i) => (
-                  <option key={i} value={subcategory}>
-                    {subcategory}
-                  </option>
-                ))}
-              </select>
-            )}
+            </div>
 
             {/* Cart Button */}
             <button

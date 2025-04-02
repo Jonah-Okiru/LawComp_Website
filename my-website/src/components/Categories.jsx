@@ -1,15 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { products } from "../data/products";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
-/**
- * Categories component displays product categories and subcategories
- * @param {Object} props - Component props
- * @param {Function} props.onSelectCategory - Handler for category selection
- * @param {Function} props.onSelectSubcategory - Handler for subcategory selection
- * @param {String} props.selectedCategory - Currently selected category
- * @param {String} props.selectedSubcategory - Currently selected subcategory
- */
 export const Categories = ({ 
   onSelectCategory, 
   onSelectSubcategory,
@@ -39,10 +31,32 @@ export const Categories = ({
     };
   });
 
-  // State for hovered category
-  const [hoveredCategory, setHoveredCategory] = useState(null);
-  // State to keep subcategories open when a category is selected
-  const [activeCategory, setActiveCategory] = useState(null);
+  // State for hover/active dropdowns
+  const [activeDropdown, setActiveDropdown] = useState(null);
+
+  /**
+   * Handle category click
+   * @param {String} category - Clicked category
+   */
+  const handleCategoryClick = (category) => {
+    if (activeDropdown === category) {
+      setActiveDropdown(null);
+      onSelectCategory(null);
+    } else {
+      setActiveDropdown(category);
+      onSelectCategory(category);
+    }
+    onSelectSubcategory(null);
+  };
+
+  /**
+   * Handle subcategory click
+   * @param {String} subcategory - Clicked subcategory
+   */
+  const handleSubcategoryClick = (subcategory) => {
+    onSelectSubcategory(subcategory);
+    setActiveDropdown(null); // Close dropdown after selection
+  };
 
   // Pagination state
   const itemsPerPage = 4;
@@ -56,30 +70,6 @@ export const Categories = ({
   // Navigation handlers
   const handleNext = () => page < totalPages - 1 && setPage(page + 1);
   const handlePrev = () => page > 0 && setPage(page - 1);
-
-  /**
-   * Handle category click
-   * @param {String} category - Clicked category
-   */
-  const handleCategoryClick = (category) => {
-    if (activeCategory === category) {
-      setActiveCategory(null);
-      onSelectCategory(null);
-    } else {
-      setActiveCategory(category);
-      onSelectCategory(category);
-    }
-    onSelectSubcategory(null);
-  };
-
-  /**
-   * Handle subcategory click
-   * @param {String} subcategory - Clicked subcategory
-   */
-  const handleSubcategoryClick = (subcategory) => {
-    onSelectSubcategory(subcategory);
-    setHoveredCategory(null);
-  };
 
   return (
     <div className="py-12 px-4 bg-gray-50">
@@ -95,12 +85,6 @@ export const Categories = ({
             <div
               key={category}
               className="relative"
-              onMouseEnter={() => setHoveredCategory(category)}
-              onMouseLeave={() => {
-                if (activeCategory !== category) {
-                  setHoveredCategory(null);
-                }
-              }}
             >
               {/* Category Card */}
               <div
@@ -131,13 +115,13 @@ export const Categories = ({
                       ? selectedSubcategory 
                         ? `Viewing: ${selectedSubcategory}`
                         : `Viewing all ${category}`
-                      : 'View products'}
+                      : `${subcategories.length} subcategories`}
                   </p>
                 </div>
               </div>
 
               {/* Subcategories Dropdown */}
-              {(hoveredCategory === category || activeCategory === category) && (
+              {activeDropdown === category && (
                 <div className="absolute z-10 mt-2 w-full bg-white rounded-md shadow-lg">
                   <div className="py-1">
                     {/* Option to view all products in category */}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { products } from "../data/products";
-import { FaShoppingCart } from "react-icons/fa";
+import { FaShoppingCart, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 export const Products = ({ 
   selectedCategory, 
@@ -10,6 +10,9 @@ export const Products = ({
 }) => {
   // State for showing success message when product is added to cart
   const [addedProducts, setAddedProducts] = useState(new Set());
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(0);
+  const productsPerPage = 4;
 
   // Filter products based on selected category/subcategory or show random featured products
   const getFilteredProducts = () => {
@@ -22,11 +25,22 @@ export const Products = ({
     if (selectedCategory) {
       return products.filter((p) => p.category === selectedCategory);
     }
-    const shuffled = [...products].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 4);
+    return [...products]; // Return all products for pagination
   };
 
   const filteredProducts = getFilteredProducts();
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const paginatedProducts = filteredProducts.slice(
+    currentPage * productsPerPage,
+    (currentPage + 1) * productsPerPage
+  );
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   // Handle adding product to cart with success feedback
   const handleAddToCart = (product) => {
@@ -66,55 +80,82 @@ export const Products = ({
             <p className="text-gray-600">No products found in this category.</p>
           </div>
         ) : (
-          /* Products Grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 cursor-pointer"
-                onClick={() => onSelectProduct(product)}
-              >
-                {/* Product Image */}
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition duration-500 hover:scale-105"
-                  />
+          <>
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {paginatedProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300 cursor-pointer"
+                  onClick={() => onSelectProduct(product)}
+                >
+                  {/* Product Image */}
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition duration-500 hover:scale-105"
+                    />
+                  </div>
+                  
+                  {/* Product Info */}
+                  <div className="p-4">
+                    <h4 className="font-semibold text-lg text-gray-800 mb-1 line-clamp-1">
+                      {product.name}
+                    </h4>
+                    <p className="text-blue-600 font-medium mb-3">{product.price}</p>
+                    <p className="text-sm text-gray-500 mb-2">
+                      {product.category} • {product.subcategory}
+                    </p>
+                    
+                    {/* Add to Cart Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(product);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition duration-200"
+                    >
+                      <FaShoppingCart />
+                      <span>Add to Cart</span>
+                    </button>
+                    
+                    {/* Success Message */}
+                    {addedProducts.has(product.id) && (
+                      <div className="mt-2 text-center text-green-600 animate-bounce">
+                        ✅ Added to cart!
+                      </div>
+                    )}
+                  </div>
                 </div>
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-4 mt-8">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 0}
+                  className={`p-2 rounded-full ${currentPage === 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                >
+                  <FaArrowLeft />
+                </button>
                 
-                {/* Product Info */}
-                <div className="p-4">
-                  <h4 className="font-semibold text-lg text-gray-800 mb-1 line-clamp-1">
-                    {product.name}
-                  </h4>
-                  <p className="text-blue-600 font-medium mb-3">{product.price}</p>
-                  <p className="text-sm text-gray-500 mb-2">
-                    {product.category} • {product.subcategory}
-                  </p>
-                  
-                  {/* Add to Cart Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart(product);
-                    }}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition duration-200"
-                  >
-                    <FaShoppingCart />
-                    <span>Add to Cart</span>
-                  </button>
-                  
-                  {/* Success Message */}
-                  {addedProducts.has(product.id) && (
-                    <div className="mt-2 text-center text-green-600 animate-bounce">
-                      ✅ Added to cart!
-                    </div>
-                  )}
-                </div>
+                <span className="text-gray-700">
+                  Page {currentPage + 1} of {totalPages}
+                </span>
+                
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages - 1}
+                  className={`p-2 rounded-full ${currentPage === totalPages - 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                >
+                  <FaArrowRight />
+                </button>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>
