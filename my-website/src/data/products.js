@@ -556,6 +556,42 @@ export const products = [
     image: '/images/Lenovo-yoga-370x360.webp',
     price: 'Ksh 27,000',
     description: 'Brand and Model: Lenovo ThinkPad Yoga 370 Form Factor: 2-in-1 Convertible (Laptop and Tablet) Processor: Intel Core i5 7th Gen RAM: 8GB Storage: 256GB SSD Display: 13.3-inch FHD Multi-Touch Display (1920 x 1080) Operating System: Windows (specific version may vary) Keyboard: ThinkPad keyboard with TrackPoint Ports: USB, HDMI, audio jacks, possibly USB-C Connectivity: Wi-Fi and Bluetooth Build Quality: Durable and rugged ThinkPad construction Battery Life: Varies, but provides several hours of use',
+  },
+  {
+    id: 64,
+    category:'CPU',
+    subcategory:'HP',
+    name: 'HP CPU C2D 2/250',
+    image: '/images/hp-cpu-c2d.jpg',
+    price: 'Ksh 6,500',
+    description: 'Manufacturer/Model: HP Compaq pro Processor: Intel Core 2 duo 3.10 GHz Memory Installed: 2GB Hard Drive: 250GB Operating System: Windows 10 Professional 64 Bit Microsoft Office. Video Input: VGA Port-, Display Port Additional Ports: USB 2.0, Serial Port-, Parallel Ports.',
+  },
+  {
+    id: 65,
+    category:'CPU',
+    subcategory:'HP',
+    name: 'HP CPU Core i5 4/500',
+    image: '/images/hp-cpu-c2d.jpg',
+    price: 'Ksh 13,000',
+    description: 'Manufacturer/Model: HP Compaq pro Processor: Intel Core i5 3.10 GHz Memory Installed: 4GB Hard Drive: 500GB Operating System: Windows 10 Professional 64 Bit Microsoft Office. Video Input: VGA Port-, Display Port Additional Ports: USB 2.0, Serial Port-, Parallel Ports.',
+  },
+  {
+    id: 66,
+    category:'CPU',
+    subcategory:'HP',
+    name: 'HP CPU Core i7 4/500',
+    image: '/images/hp-cpu-c2d.jpg',
+    price: 'Ksh 16,000',
+    description: 'Manufacturer/Model: HP Compaq pro Processor: Intel Core i7 3.10 GHz Memory Installed: 4GB Hard Drive: 500GB Operating System: Windows 10 Professional 64 Bit Microsoft Office. Video Input: VGA Port-, Display Port Additional Ports: USB 2.0, Serial Port-, Parallel Ports.',
+  },
+  {
+    id: 67,
+    category:'CPU',
+    subcategory:'HP',
+    name: 'HP CPU Tower Core i5 4/500',
+    image: '/images/hp-cpu-tower.avif',
+    price: 'Ksh 13,000',
+    description: 'Manufacturer/Model: HP Compaq pro Processor: Intel Core i5 3.10 GHz Memory Installed: 4GB Hard Drive: 500GB Operating System: Windows 10 Professional 64 Bit Microsoft Office. Video Input: VGA Port-, Display Port Additional Ports: USB 2.0, Serial Port-, Parallel Ports.',
   }
   
 ]
