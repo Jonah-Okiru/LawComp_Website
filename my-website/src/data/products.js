@@ -493,5 +493,24 @@ export const products = [
     image: '/images/hp-x360-12th-gen.webp',
     price: 'Ksh 35,000',
     description: 'HP Pavilion 14 X360 Convertible 14-dy2050wm offers a versatile computing experience packed with power and functionality. Seamlessly blending performance, portability, and convenience, this convertible laptop caters to a wide range of users, whether you’re a student, a professional, or a casual user seeking a reliable device for everyday tasks.',
+  },
+  {
+    id: 57,
+    category:'Laptop',
+    subcategory:'DELL',
+    name: 'Laptop Dell 5289 X360 i7/16/256',
+    image: '/images/dell-5289x360.jpg',
+    price: 'Ksh 32,000',
+    description: 'Intel® Core™ i7 i7-7600U 2.8 GHzTouchscreen 31.8 cm (12.5") Full HD 1920 x 1080 pixels LED backlight 16:916 GB LPDDR3-SDRAM 1866 MHz256 GB SSDIntel® HD Graphics 620Bluetooth 4.1Lithium Polymer (LiPo) 45 Wh 45 WWindows 10 Pro 64-bit',
+  },
+  {
+    id: 58,
+    category:'Laptop',
+    subcategory:'DELL',
+    name: 'Laptop Dell Latitude 5490 8th Gen i5/8/256',
+    image: '/images/dell-5490.png',
+    price: 'Ksh 35,000',
+    description: 'Processor: Intel Core i5 8th Gen processor (specific model varies) RAM: 8GB DDR4 RAM Storage: 256GB Solid State Drive (SSD) Graphics: Integrated Intel HD Graphics Display: 14-inch Full HD (1920 x 1080) Anti-Glare LED-backlit display Ports and Connectivity: USB 3.1, USB-C, HDMI, VGA, Ethernet, SD card readerheadphone/microphone combo jack, Wi-Fi, Bluetooth Operating System: Typically comes with Windows 10 Pro',
   }
+  
 ]
