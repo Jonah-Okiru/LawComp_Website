@@ -3,15 +3,15 @@ import { products } from "../data/products";
 import { ShoppingCart, Search, Menu } from "lucide-react";
 import { FaTimes } from "react-icons/fa";
 
-export const Navbar = ({ 
-  onSelectProduct, 
-  categories, 
-  onCategorySelect, 
+export const Navbar = ({
+  onSelectProduct,
+  categories,
+  onCategorySelect,
   onSubcategorySelect,
   selectedCategory,
   selectedSubcategory,
-  cartCount, 
-  onToggleCart 
+  cartCount,
+  onToggleCart
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -19,8 +19,8 @@ export const Navbar = ({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [categorySubcategories, setCategorySubcategories] = useState({});
+  const [activeCategoryDropdown, setActiveCategoryDropdown] = useState(null);
 
-  // Generate subcategories map when component mounts
   useEffect(() => {
     const subcategoriesMap = {};
     categories.forEach(category => {
@@ -34,7 +34,6 @@ export const Navbar = ({
     setCategorySubcategories(subcategoriesMap);
   }, [categories]);
 
-  // Close mobile menu when window is resized to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 768) {
@@ -46,7 +45,6 @@ export const Navbar = ({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Search functionality
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -69,9 +67,15 @@ export const Navbar = ({
   };
 
   const handleCategoryClick = (category) => {
-    onCategorySelect(category);
-    onSubcategorySelect(null);
-    setIsCategoriesOpen(false);
+    if (selectedCategory === category) {
+      // Deselect category if clicked again
+      onCategorySelect(null);
+      setActiveCategoryDropdown(null);
+    } else {
+      onCategorySelect(category);
+      onSubcategorySelect(null);
+      setActiveCategoryDropdown(category);
+    }
     setIsMobileMenuOpen(false);
   };
 
@@ -81,46 +85,43 @@ export const Navbar = ({
     setIsMobileMenuOpen(false);
   };
 
-  const toggleCategories = () => {
-    setIsCategoriesOpen(!isCategoriesOpen);
-  };
-
   return (
     <nav className="bg-green-600 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo and Mobile Menu Button */}
+          {/* Logo */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <img 
-                src="/images/logo.jpeg" 
-                alt="LawComp Computers" 
+              <img
+                src="/images/logo.jpeg"
+                alt="LawComp Computers"
                 className="h-12 w-auto"
               />
             </div>
-            
-            {/* Desktop Navigation */}
+
+            {/* Desktop nav */}
             <div className="hidden md:ml-6 md:flex md:items-center md:space-x-4">
               <button
                 className="px-3 py-2 text-white hover:bg-green-700 rounded-md font-medium"
                 onClick={() => {
-                  handleCategoryClick(null);
-                  handleSubcategoryClick(null);
+                  onCategorySelect(null);
+                  onSubcategorySelect(null);
+                  setActiveCategoryDropdown(null);
                 }}
               >
                 All Products
               </button>
-              
-              {/* Categories Dropdown */}
+
+              {/* Categories */}
               <div className="relative">
                 <button
+                  onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
                   className="px-3 py-2 text-white hover:bg-green-700 rounded-md font-medium flex items-center"
-                  onClick={toggleCategories}
                 >
                   Categories
                   <svg
                     className={`ml-2 h-4 w-4 transition-transform ${
-                      isCategoriesOpen ? "transform rotate-180" : ""
+                      isCategoriesOpen ? "rotate-180" : ""
                     }`}
                     fill="none"
                     viewBox="0 0 24 24"
@@ -134,54 +135,42 @@ export const Navbar = ({
                     />
                   </svg>
                 </button>
-                
-                {/* Categories Dropdown Menu */}
+
                 {isCategoriesOpen && (
-                  <div 
-                    className="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10"
-                  >
+                  <div className="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10">
                     <div className="py-1">
                       {categories.map((category) => (
                         <div key={category} className="relative">
                           <button
                             onClick={() => handleCategoryClick(category)}
-                            className={`w-full text-left px-4 py-2 text-sm flex justify-between items-center ${
+                            className={`w-full text-left px-4 py-2 text-sm ${
                               selectedCategory === category && !selectedSubcategory
-                                ? 'bg-green-100 text-green-800'
-                                : 'text-gray-700 hover:bg-gray-100'
+                                ? 'bg-green-600 text-green-800'
+                                : 'text-gray-700 hover:bg-green-400'
                             }`}
                           >
                             {category}
-                            {categorySubcategories[category] && (
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                              </svg>
-                            )}
                           </button>
-                          
-                          {/* Subcategories Dropdown */}
-                          {categorySubcategories[category] && (
-                            <div className="absolute left-full top-0 ml-1 w-56 bg-white rounded-md shadow-lg z-20">
-                              <div className="py-1">
+
+                          {/* Subcategories for selected category */}
+                          {activeCategoryDropdown === category &&
+                            categorySubcategories[category]?.length > 0 && (
+                              <div className="pl-4">
                                 {categorySubcategories[category].map((subcategory) => (
                                   <button
                                     key={subcategory}
-                                    onClick={() => {
-                                      handleCategoryClick(category);
-                                      handleSubcategoryClick(subcategory);
-                                    }}
+                                    onClick={() => handleSubcategoryClick(subcategory)}
                                     className={`w-full text-left px-4 py-2 text-sm ${
                                       selectedSubcategory === subcategory
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                        ? 'bg-green-600 text-green-800'
+                                        : 'text-gray-700 hover:bg-green-400'
                                     }`}
                                   >
                                     {subcategory}
                                   </button>
                                 ))}
                               </div>
-                            </div>
-                          )}
+                            )}
                         </div>
                       ))}
                     </div>
@@ -193,7 +182,6 @@ export const Navbar = ({
 
           {/* Desktop Search and Cart */}
           <div className="hidden md:flex md:items-center md:space-x-4">
-            {/* Search Bar */}
             <div className="relative">
               <div className="flex items-center border rounded-md overflow-hidden">
                 <input
@@ -207,8 +195,7 @@ export const Navbar = ({
                   <Search className="h-5 w-5 text-gray-500" />
                 </button>
               </div>
-              
-              {/* Search Suggestions */}
+
               {suggestions.length > 0 && (
                 <ul className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-96 overflow-y-auto">
                   {suggestions.map((product) => (
@@ -217,9 +204,9 @@ export const Navbar = ({
                       onClick={() => handleSelectProduct(product)}
                       className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
                     >
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
+                      <img
+                        src={product.image}
+                        alt={product.name}
                         className="w-10 h-10 object-cover mr-3"
                       />
                       <div>
@@ -232,7 +219,6 @@ export const Navbar = ({
               )}
             </div>
 
-            {/* Cart Button */}
             <button
               onClick={onToggleCart}
               className="relative p-2 text-white hover:bg-green-700 rounded-full"
@@ -246,7 +232,7 @@ export const Navbar = ({
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile icons */}
           <div className="md:hidden flex items-center space-x-2">
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -263,104 +249,6 @@ export const Navbar = ({
           </div>
         </div>
       </div>
-
-      {/* Mobile Search */}
-      {isSearchOpen && (
-        <div className="md:hidden bg-green-700 px-4 py-2">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="w-full py-2 px-3 rounded-md focus:outline-none"
-            />
-            {suggestions.length > 0 && (
-              <ul className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-96 overflow-y-auto">
-                {suggestions.map((product) => (
-                  <li
-                    key={product.id}
-                    onClick={() => handleSelectProduct(product)}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    {product.name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-green-700 px-4 py-2">
-          <div className="space-y-2">
-            <button
-              onClick={() => {
-                handleCategoryClick(null);
-                handleSubcategoryClick(null);
-              }}
-              className="w-full text-left px-4 py-2 text-white hover:bg-green-800 rounded-md"
-            >
-              All Products
-            </button>
-            
-            {/* Category selection */}
-            <div className="border-t border-green-800 pt-2">
-              <h3 className="px-4 py-2 text-white font-medium">Categories</h3>
-              {categories.map((category) => (
-                <div key={category} className="pl-4">
-                  <button
-                    onClick={() => handleCategoryClick(category)}
-                    className={`w-full text-left px-4 py-2 text-white rounded-md ${
-                      selectedCategory === category && !selectedSubcategory
-                        ? 'bg-green-800'
-                        : 'hover:bg-green-800'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                  
-                  {/* Subcategory selection */}
-                  {selectedCategory === category && categorySubcategories[category] && (
-                    <div className="pl-4">
-                      {categorySubcategories[category].map((subcategory) => (
-                        <button
-                          key={subcategory}
-                          onClick={() => {
-                            handleCategoryClick(category);
-                            handleSubcategoryClick(subcategory);
-                          }}
-                          className={`w-full text-left px-4 py-2 text-white text-sm rounded-md ${
-                            selectedSubcategory === subcategory
-                              ? 'bg-green-800'
-                              : 'hover:bg-green-800'
-                          }`}
-                        >
-                          {subcategory}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Cart Button */}
-            <button
-              onClick={() => {
-                onToggleCart();
-                setIsMobileMenuOpen(false);
-              }}
-              className="w-full flex items-center justify-center p-2 text-white hover:bg-green-800 rounded-md"
-            >
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Cart ({cartCount})
-            </button>
-          </div>
-        </div>
-      )}
     </nav>
   );
 };
